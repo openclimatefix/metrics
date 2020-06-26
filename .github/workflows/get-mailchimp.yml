@@ -1,10 +1,9 @@
 name: GET Mailchimp
 
 on:
-  #schedule:
-  #  # At 3am every night
-  #  - cron:  '0 3 * * *'
-  push
+  schedule:
+    # At 3am every night
+    - cron:  '0 3 * * *'
 
 jobs:
   get-data:
