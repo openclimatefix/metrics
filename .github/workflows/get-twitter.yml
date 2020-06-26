@@ -1,10 +1,9 @@
 name: GET Twitter
 
 on:
-  #schedule:
-  #  # At 2am every night
-  #  - cron:  '0 2 * * *'
-  push
+  schedule:
+    # At 2am every night
+    - cron:  '0 2 * * *'
 
 jobs:
   get-data:
