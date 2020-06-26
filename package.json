@@ -5,7 +5,8 @@
   "main": "get-opencollective.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "get-opencollective": "node get-opencollective.js"
+    "get-opencollective": "node get-opencollective.js",
+    "get-twitter": "node get-twitter.js"
   },
   "repository": {
     "type": "git",
