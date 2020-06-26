@@ -1,0 +1,23 @@
+{
+  "name": "metrics",
+  "version": "1.0.0",
+  "description": "Toolkit to automatically collect OCF metrics and store them over time",
+  "main": "get-opencollective.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "get-opencollective": "node get-opencollective.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/openclimatefix/metrics.git"
+  },
+  "author": "Flo Wirtz <flo@openclimatefix.org> (https://github.com/flowirtz)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/openclimatefix/metrics/issues"
+  },
+  "homepage": "https://github.com/openclimatefix/metrics#readme",
+  "dependencies": {
+    "axios": "^0.19.2"
+  }
+}

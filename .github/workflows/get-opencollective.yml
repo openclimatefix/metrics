@@ -1,0 +1,31 @@
+name: GET Open Collective
+
+on:
+  schedule:
+    # At 1am every night
+    - cron:  '0 1 * * *'
+
+jobs:
+  get-data:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: '12.x'
+    - run: npm install
+    - run: npm run get-opencollective
+    - name: check for changes
+      run: git status
+    - name: stage changed files
+      run: |
+        git config --local user.name "ocf-bot"
+        git add .
+        git commit -m "Add current opencollective data"
+    - name: fetch from master
+      run: git fetch origin master
+    - name: push code to master
+      run: git push origin HEAD:master

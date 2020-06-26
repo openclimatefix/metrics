@@ -1,0 +1,104 @@
+<html>
+
+<head>
+    <title>TEST</title>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.js'></script>
+</head>
+
+<body>
+    <canvas id='myChart'></canvas>
+    <script>
+        var ctx = document.getElementById('myChart').getContext('2d');
+        const data = [{
+            'x': '2020-06-26T11:55:19.361Z',
+            'y': 510.89
+        }, {
+            'x': '2020-06-25T11:55:19.361Z',
+            'y': 500.89
+        }, {
+            'x': '2020-06-24T11:55:19.361Z',
+            'y': 490.89
+        }, {
+            'x': '2020-06-23T11:55:19.361Z',
+            'y': 610.89
+        }, {
+            'x': '2020-06-22T11:55:19.361Z',
+            'y': 510.89
+        }, {
+            'x': '2020-06-21T11:55:19.361Z',
+            'y': 510.89
+        }, {
+            'x': '2020-06-20T11:55:19.361Z',
+            'y': 510.89
+        }, {
+            'x': '2020-06-19T11:55:19.361Z',
+            'y': 510.89
+        }, {
+            'x': '2020-06-18T11:55:19.361Z',
+            'y': 410.89
+        }, {
+            'x': '2020-06-17T11:55:19.361Z',
+            'y': 510.89
+        }, {
+            'x': '2020-06-16T11:55:19.361Z',
+            'y': 510.89
+        }, {
+            'x': '2020-06-15T11:55:19.361Z',
+            'y': 510.89
+        }, {
+            'x': '2020-06-14T11:55:19.361Z',
+            'y': 510.89
+        }, {
+            'x': '2020-06-13T11:55:19.361Z',
+            'y': 510.89
+        }, {
+            'x': '2020-05-26T11:55:19.361Z',
+            'y': 410.89
+        }, {
+            'x': '2020-04-26T11:55:19.361Z',
+            'y': 310.89
+        }, {
+            'x': '2020-03-26T11:55:19.361Z',
+            'y': 210.89
+        }, {
+            'x': '2020-02-26T11:55:19.361Z',
+            'y': 110.89
+        }, {
+            'x': '2020-01-26T11:55:19.361Z',
+            'y': 610.89
+        }];
+
+        var config = {
+            type: 'line',
+            data: {
+                datasets: [{
+                    label: 'Budget in £',
+                    backgroundColor: 'rgb(255, 99, 132)',
+                    borderColor: 'rgb(255, 99, 132)',
+                    fill: false,
+                    data: data,
+                }]
+            },
+            options: {
+                responsive: true,
+                title: {
+                    display: true,
+                    text: 'OCF Monthly Budget'
+                },
+                scales: {
+                    xAxes: [{
+                        type: 'time',
+                        time: {
+                            unit: 'month',
+                            tooltipFormat: 'll'
+                        },
+                    }],
+                }
+            }
+        };
+
+        var c = new Chart(ctx, config)
+    </script>
+</body>
+
+</html>
