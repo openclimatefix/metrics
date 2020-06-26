@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "get-opencollective": "node get-opencollective.js",
-    "get-twitter": "node get-twitter.js"
+    "get-twitter": "node get-twitter.js",
+    "get-mailchimp": "node get-mailchimp.js"
   },
   "repository": {
     "type": "git",
