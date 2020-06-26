@@ -28,7 +28,7 @@ jobs:
       run: |
         git config --local user.name "ocf-bot"
         git add .
-        git commit -m "Add current twitter data"
+        git commit -m "🗃 Add current twitter data"
     - name: fetch from master
       run: git fetch origin master
     - name: push code to master
