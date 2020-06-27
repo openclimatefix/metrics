@@ -1,0 +1,33 @@
+name: GET GitHub
+
+on:
+  #schedule:
+  #  # At 4am every night
+  #  - cron:  '0 4 * * *'
+  push
+
+jobs:
+  get-data:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: '12.x'
+    - run: npm install
+    - run: npm run get-github
+    - name: check for changes
+      run: git status
+    - name: stage changed files
+      run: |
+        git config --local user.name "ocf-bot"
+        git config --local user.email "info@openclimatefix.org"
+        git add .
+        git commit -m "🗃 Add latest GitHub data"
+    - name: fetch from master
+      run: git fetch origin master
+    - name: push code to master
+      run: git push origin HEAD:master
