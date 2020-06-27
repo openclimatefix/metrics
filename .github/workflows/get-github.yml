@@ -1,10 +1,9 @@
 name: GET GitHub
 
 on:
-  #schedule:
-  #  # At 4am every night
-  #  - cron:  '0 4 * * *'
-  push
+  schedule:
+    # At 4am every night
+    - cron:  '0 4 * * *'
 
 jobs:
   get-data:
