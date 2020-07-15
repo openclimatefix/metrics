@@ -8,7 +8,8 @@
     "get-opencollective": "node get-opencollective.js",
     "get-twitter": "node get-twitter.js",
     "get-mailchimp": "node get-mailchimp.js",
-    "get-github": "node get-github.js"
+    "get-github": "node get-github.js",
+    "get-cloudflare": "node get-cloudflare.js"
   },
   "repository": {
     "type": "git",
