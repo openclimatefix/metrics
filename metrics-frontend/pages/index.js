@@ -394,9 +394,3 @@ export default function Index({ data }) {
     </div>
   );
 }
-
-Index.getInitialProps = async (ctx) => {
-  const res = await fetch("http://localhost:3000/api/data");
-  const json = await res.json();
-  return { data: json };
-};
