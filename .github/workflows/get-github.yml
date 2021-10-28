@@ -26,7 +26,7 @@ jobs:
         git config --local user.email "info@openclimatefix.org"
         git add .
         git commit -m "🗃 Add latest GitHub data"
-    - name: fetch from master
-      run: git fetch origin master
-    - name: push code to master
-      run: git push origin HEAD:master
+    - name: fetch from main
+      run: git fetch origin main
+    - name: push code to main
+      run: git push origin HEAD:main
