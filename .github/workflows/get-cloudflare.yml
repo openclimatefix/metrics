@@ -1,37 +1,52 @@
-name: GET Cloudflare
+name: Fetch Cloudflare Data
 
 on:
   schedule:
-    # At 6am every night
-    - cron:  '0 6 * * *'
+    # Run at 6:00 AM UTC daily
+    - cron: '0 6 * * *'
 
 jobs:
-  get-data:
-
+  fetch-cloudflare-data:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js
-      uses: actions/setup-node@v1
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
       with:
-        node-version: '12.x'
-    - run: npm install
-    - name: Fetch Cloudflare data
+        node-version: '18.x' 
+
+    - name: Install Dependencies
+      run: npm install
+
+    - name: Fetch Cloudflare Data
       env:
         CLOUDFLARE_ZONE_TAG: ${{ secrets.CLOUDFLARE_ZONE_TAG }}
         CLOUDFLARE_EMAIL: ${{ secrets.CLOUDFLARE_EMAIL }}
         CLOUDFLARE_API_KEY: ${{ secrets.CLOUDFLARE_API_KEY }}
       run: npm run get-cloudflare
-    - name: check for changes
-      run: git status
-    - name: stage changed files
+
+    - name: Check for Changes
+      run: |
+        git status
+        if git diff --quiet; then
+          echo "No changes detected. Exiting..."
+          exit 0
+        fi
+
+    - name: Stage and Commit Changes
       run: |
         git config --local user.name "ocf-bot"
         git config --local user.email "info@openclimatefix.org"
         git add .
-        git commit -m "🗃 Add latest cloudflare data"
-    - name: fetch from main
-      run: git fetch origin main
-    - name: push code to main
+        git commit -m "🗃 Add latest Cloudflare data"
+
+    - name: Fetch and Rebase Main
+      run: |
+        git fetch origin main
+        git pull --rebase origin main
+
+    - name: Push Changes to Main
       run: git push origin HEAD:main
