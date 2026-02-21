@@ -1,37 +1,130 @@
-name: GET Cloudflare
+name: Fetch Cloudflare Data
 
 on:
   schedule:
-    # At 6am every night
-    - cron:  '0 6 * * *'
+    # Run at 6:00 AM UTC daily
+    - cron: '0 6 * * *'
+  # Allow manual trigger
+  workflow_dispatch:
+    inputs:
+      force_update:
+        description: 'Force update even if no changes'
+        required: false
+        type: boolean
+        default: false
 
+env:
+  NODE_VERSION: '18.x'
+  
 jobs:
-  get-data:
-
+  fetch-cloudflare-data:
     runs-on: ubuntu-latest
+    timeout-minutes: 15  # Set maximum job runtime
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js
-      uses: actions/setup-node@v1
+    - name: Checkout Repository
+      uses: actions/checkout@v4
       with:
-        node-version: '12.x'
-    - run: npm install
-    - name: Fetch Cloudflare data
+        fetch-depth: 0  # Fetch all history for proper rebasing
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'  # Enable npm caching
+
+    - name: Install Dependencies
+      run: |
+        npm ci  # Use clean install for consistent builds
+        npm audit  # Security check
+
+    - name: Cache Cloudflare Data
+      uses: actions/cache@v3
+      with:
+        path: .cloudflare-cache
+        key: cloudflare-${{ github.sha }}
+        restore-keys: |
+          cloudflare-
+
+    - name: Fetch Cloudflare Data
+      id: fetch-data
       env:
         CLOUDFLARE_ZONE_TAG: ${{ secrets.CLOUDFLARE_ZONE_TAG }}
         CLOUDFLARE_EMAIL: ${{ secrets.CLOUDFLARE_EMAIL }}
         CLOUDFLARE_API_KEY: ${{ secrets.CLOUDFLARE_API_KEY }}
-      run: npm run get-cloudflare
-    - name: check for changes
-      run: git status
-    - name: stage changed files
       run: |
-        git config --local user.name "ocf-bot"
-        git config --local user.email "info@openclimatefix.org"
+        echo "Starting Cloudflare data fetch..."
+        npm run get-cloudflare || {
+          echo "::error::Failed to fetch Cloudflare data"
+          exit 1
+        }
+        echo "Cloudflare data fetch completed successfully"
+
+    - name: Check for Changes
+      id: check-changes
+      run: |
+        git status
+        if [[ -n "$(git status --porcelain)" ]]; then
+          echo "changes_detected=true" >> $GITHUB_OUTPUT
+          echo "Changes detected in the repository"
+        else
+          echo "changes_detected=false" >> $GITHUB_OUTPUT
+          echo "No changes detected in the repository"
+        fi
+
+    - name: Commit and Push Changes
+      if: steps.check-changes.outputs.changes_detected == 'true' || github.event.inputs.force_update == 'true'
+      run: |
+        # Configure git
+        git config --local user.name "GitHub Actions Bot"
+        git config --local user.email "actions@github.com"
+        
+        # Stage changes
         git add .
-        git commit -m "🗃 Add latest cloudflare data"
-    - name: fetch from main
-      run: git fetch origin main
-    - name: push code to main
-      run: git push origin HEAD:main
+        
+        # Create commit with detailed message
+        commit_message="🗃 Update Cloudflare Data
+
+        Automated update via GitHub Actions
+        Workflow Run: ${{ github.run_number }}
+        Timestamp: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+        
+        git commit -m "$commit_message"
+        
+        # Fetch latest changes and rebase
+        echo "Fetching latest changes from main branch..."
+        git fetch origin main
+        
+        echo "Rebasing with main branch..."
+        if ! git rebase origin/main; then
+          echo "::error::Rebase failed. Manual intervention may be required."
+          git rebase --abort
+          exit 1
+        fi
+        
+        # Push changes
+        echo "Pushing changes to main branch..."
+        if ! git push origin HEAD:main; then
+          echo "::error::Failed to push changes. Repository may be out of sync."
+          exit 1
+        fi
+        
+        echo "Successfully pushed changes to main branch"
+
+    - name: Cleanup
+      if: always()  # Run cleanup even if previous steps failed
+      run: |
+        rm -rf .cloudflare-cache
+        npm cache clean --force
+
+    - name: Notify on Failure
+      if: failure()
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const issue = await github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: '❌ Cloudflare Data Fetch Failed',
+            body: `Workflow run failed: [View Run](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`
+          });
